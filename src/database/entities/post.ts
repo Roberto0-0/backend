@@ -1,0 +1,70 @@
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from "typeorm";
+import { Company } from "./company";
+import { Like } from "./like";
+
+@Entity("posts")
+export class Post {
+  @PrimaryGeneratedColumn("uuid")
+  id: string
+
+  @Column({
+    type: "varchar",
+    unique: true,
+    nullable: false
+  })
+  company_name: string
+
+  @Column({
+    type: "varchar",
+    unique: true,
+    nullable: false
+  })
+  vancancy: string
+
+  @Column({
+    type: "varchar",
+    unique: true,
+    nullable: false
+  })
+  location: string
+
+  @Column({
+    type: "int",
+    unique: true,
+    nullable: false
+  })
+  salary: number
+
+  @Column({
+    type: "text",
+    nullable: true
+  })
+  information: string
+
+  @Column({
+    type: "int",
+    nullable: false,
+    default: 0
+  })
+  likes: number
+
+  @ManyToOne(() => Company, (company) => company.post)
+  company: Company
+
+  @OneToMany(() => Like, (like) => like.post)
+  like: Like[]
+
+  @CreateDateColumn()
+  created_at: Date
+
+  @UpdateDateColumn()
+  updated_at: Date
+}
