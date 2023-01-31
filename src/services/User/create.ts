@@ -1,5 +1,6 @@
 import { UserRepository } from "../../repositories/UserRepository"
 import { CreatePasswordHash} from "../Bcrypt/index"
+import { EmailValidation } from "../emailValidation";
 
 interface Attributes {
   name: string;
@@ -21,10 +22,12 @@ export class Create {
     if(password !== confirmPassword) {
       return new Error("Differents password!")
     }
+
+    if(!EmailValidation(email)) {
+      return new Error("Email invalid")
+    }
     
     const newPassword = await CreatePasswordHash(password)
-    
-    console.log(newPassword)
     
     const newUser = UserRepository.create({
       name,
