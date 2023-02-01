@@ -7,16 +7,14 @@ import { Delete } from "../services/Company/delete"
 
 export class CompanyController {
   async create(req: Request, res: Response) {
-    const { company_name, employer, email, password, confirm_password } = req.body
+    const { employer, company_name, email } = req.body
 
     try {
       const service = new Create()
       const result = await service.execute({
-        company_name,
         employer,
-        email,
-        password,
-        confirm_password
+        company_name,
+        email
       })
 
       if (result instanceof Error) {

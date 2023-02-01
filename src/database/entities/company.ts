@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  ManyToOne
 } from "typeorm"
+import { User } from "./user"
 import { Post } from "./post"
 
 @Entity("companies")
@@ -17,29 +19,22 @@ export class Company {
     type: "varchar",
     nullable: false
   })
-  company: string
-
-  @Column({
-    type: "varchar",
-    nullable: false
-  })
   employer: string
 
-  @Column({
-    type: "varchar",
-    unique: true,
-    nullable: false
-  })
-  email: string
 
   @Column({
     type: "varchar",
-    nullable: false
+    nullable: false,
+    unique: true
   })
-  password: string
+  company: string
+
+  @ManyToOne(() => User, (user) => user.company)
+  user: User
 
   @OneToMany(() => Post, (post) => post.company, {
-    onDelete: 'CASCADE'
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE' 
   })
   post: Post[]
 

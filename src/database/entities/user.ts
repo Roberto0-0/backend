@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn
 } from "typeorm"
+import { Company } from "./company"
 import { Like } from "./like"
 
 @Entity("users")
@@ -31,6 +32,12 @@ export class User {
     nullable: false
   })
   password: string
+
+  @OneToMany(() => Company, (company) => company.user, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
+  })
+  company: Company[]
   
   @OneToMany(() => Like, (like) => like.user)
   like: Like[]
