@@ -3,7 +3,7 @@ import { PostRepository } from "../../repositories/PostRepository";
 
 export interface Attributes {
   company_id: string;
-  company_name: string;
+  companyName: string;
   vancancy: string;
   location: string;
   salary: number;
@@ -11,7 +11,7 @@ export interface Attributes {
 }
 
 export class Create {
-  async execute({ company_id, company_name, vancancy, location, salary, information }: Attributes) {
+  async execute({ company_id, companyName, vancancy, location, salary, information }: Attributes) {
     const company = await CompanyRepository.findOneBy({ id: company_id })
 
     if (!company) {
@@ -19,7 +19,7 @@ export class Create {
     }
 
     const post = await PostRepository.findOne({
-      where: { company_name: company_name }
+      where: { company_name: companyName }
     })
 
     if (post) {
@@ -27,7 +27,7 @@ export class Create {
     }
 
     const newPost = PostRepository.create({
-      company_name: company_name,
+      company_name: companyName,
       vancancy,
       location,
       salary,

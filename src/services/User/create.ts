@@ -1,6 +1,6 @@
 import { UserRepository } from "../../repositories/UserRepository"
 import { CreatePasswordHash} from "../Bcrypt/index"
-import { EmailValidation } from "../emailValidation"; 
+import { EmailValidation } from "../EmailValidation"; 
 
 interface Attributes {
   name: string;

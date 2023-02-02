@@ -4,24 +4,38 @@ import { ReadAll } from "../services/Company/readAll"
 import { Read } from "../services/Company/read"
 import { Update } from "../services/Company/update"
 import { Delete } from "../services/Company/delete"
+import _ from "lodash"
+import { CompanySchema } from "../schemas/companySchema"
 
 export class CompanyController {
   async create(req: Request, res: Response) {
-    const { employer, company_name, email } = req.body
-
     try {
-      const service = new Create()
-      const result = await service.execute({
-        employer,
-        company_name,
-        email
-      })
+      const {error, value} = CompanySchema.validate(req.body)
 
-      if (result instanceof Error) {
+      if(error) {
+        return res.status(422).json({
+          status: 'error',
+          message: 'Invalid request data. Please review request and try again.',
+          error: {
+            details: _.map(error.details, ({message, type}) => ({
+                message: message.replace(/['"]/g, ''),
+                type
+            }))
+          }
+        })
+      }
+      const service = new Create()
+      const result = await service.execute(value)
+      
+      if(result instanceof Error) {
         return res.status(400).send({ message: result.message })
       }
-
-      return res.status(201).send({ message: "Company created successfully!" })
+      
+      return res.status(201).json({
+        status: 'success',
+        messag: 'Company created successfully!',
+        data: value
+      })
     } catch (error) {
       console.error(error)
       return res.status(500).send({ message: "Internal server error!" })

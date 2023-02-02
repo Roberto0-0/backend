@@ -4,28 +4,49 @@ import { ReadAll } from "../services/Post/readAll"
 import { Read } from "../services/Post/read"
 import { Update } from "../services/Post/update"
 import { Delete } from "../services/Post/delete"
+import { PostSchema } from "../schemas/postSchema"
+import _ from "lodash"
 
 export class PostController {
   async create(req: Request, res: Response) {
     const { company_id } = req.params
-    const { company_name, vancancy, location, salary, information } = req.body
+    const { companyName, vancancy, location, salary, information } = req.body
 
     try {
-      const service = new Create()
-      const result = await service.execute({
+      const { error, value } = PostSchema.validate({
         company_id,
-        company_name,
+        companyName,
         vancancy,
         location,
         salary,
         information
       })
 
+      if(error) {
+        return res.status(422).json({
+          status: 'error',
+          message: 'Invalid request data. Please review request and try again.',
+          error: {
+            details: _.map(error.details, ({message, type}) => ({
+                message: message.replace(/['"]/g, ''),
+                type
+            }))
+          }
+        })
+      }
+
+      const service = new Create()
+      const result = await service.execute(value)
+
       if (result instanceof Error) {
         return res.status(400).send({ message: result.message })
       }
 
-      return res.status(201).send({ message: "Post created successfully!" })
+      return res.status(201).json({
+        status: 'success',
+        message: 'Post created successfully!',
+        data: value
+      })
     } catch (error) {
       console.error(error)
       return res.status(500).send({ message: "Internal server error!" })

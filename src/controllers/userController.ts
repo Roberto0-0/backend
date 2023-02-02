@@ -1,28 +1,41 @@
 import { Request, Response } from "express"
+import { UserSchema } from "../schemas/userSchema"
 import { Create } from "../services/User/create"
 import { Delete } from "../services/User/delete"
 import { Read } from "../services/User/read"
 import { ReadAll } from "../services/User/readAll"
 import { Update } from "../services/User/update"
+import _ from "lodash"
 
 export class UserController {
   async create(req: Request, res: Response) {
-    const { name, email, password, confirmPassword } = req.body
-    
     try {
+      const {error, value} = UserSchema.validate(req.body)
+
+      if(error) {
+        return res.status(422).json({
+          status: 'error',
+          message: 'Invalid request data. Please review request and try again.',
+          error: {
+            details: _.map(error.details, ({message, type}) => ({
+                message: message.replace(/['"]/g, ''),
+                type
+            }))
+          }
+        })
+      }
       const service = new Create()
-      const result = await service.execute({
-        name,
-        email,
-        password,
-        confirmPassword
-      })
+      const result = await service.execute(value)
       
       if(result instanceof Error) {
         return res.status(400).send({ message: result.message })
       }
       
-      return res.status(201).send({ message: "Account created successfully!" })
+      return res.status(201).json({
+        status: 'success',
+        messag: 'Account created successfully!',
+        data: value
+      })
     } catch(err) {
       console.error(err)
       return res.status(500).send({ message: "Internal server error!"})
